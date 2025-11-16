@@ -8,14 +8,18 @@ import ar.edu.unlu.poo.Domino.Observer.Observador;
 import ar.edu.unlu.poo.Domino.Vista.VistaConsola;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ControladorConsola implements Observador {
     private Partida partida;
     private VistaConsola vista;
+    private HashMap<String, Integer> puntajesTotales;
+    private int puntaje_limite;
 
     public ControladorConsola(VistaConsola vista){
         this.vista = vista;
         this.partida = null;
+        this.puntajesTotales = new HashMap<>();
     }
 
     public void iniciar(){
@@ -23,12 +27,56 @@ public class ControladorConsola implements Observador {
 
         configurarPartida();
 
-        partida.iniciarPartida();
+        this.puntaje_limite = vista.pedirPuntajeLimite();
 
-        iniciarBucleJuego();
+        String nombreGanadorJuego = null;
+        int numeroRonda = 1;
 
-        gestionarFinPartida();
+        while(nombreGanadorJuego == null){
+            vista.mostrarMensaje("\n--- INICIANDO RONDA " + numeroRonda + " ---");
 
+            iniciarNuevaRonda();
+            iniciarBucleJuego();
+
+            Jugador ganadorRonda = gestionarFinRonda();
+
+            int puntosGanados = 0;
+            for(Jugador j: partida.getJugadores()){
+                if(!j.getNombre().equals(ganadorRonda.getNombre())){
+                    puntosGanados += j.sumarPuntosDeMano();
+                }
+            }
+
+            int puntajePrevio = this.puntajesTotales.get(ganadorRonda.getNombre());
+            int puntajeNuevo = puntajePrevio + puntosGanados;
+            this.puntajesTotales.put(ganadorRonda.getNombre(), puntajeNuevo);
+
+            vista.mostrarPuntajesTotales(this.puntajesTotales, numeroRonda, this.puntaje_limite);
+
+            if(puntajeNuevo >= puntaje_limite){
+                nombreGanadorJuego = ganadorRonda.getNombre();
+            } else{
+                vista.mostrarMensaje("Presiona Enter para la siguiente ronda...");
+                vista.esperarEnter();
+                numeroRonda++;
+            }
+        }
+
+        vista.mostrarGanadorJuego(nombreGanadorJuego);
+
+    }
+
+    public void iniciarNuevaRonda(){
+        ArrayList<Jugador> jugadoresDeLaRonda = new ArrayList<>();
+
+        for(String nombreJugador: this.puntajesTotales.keySet()){
+            jugadoresDeLaRonda.add(new Jugador(nombreJugador));
+        }
+
+        this.partida = new Partida(jugadoresDeLaRonda);
+        this.partida.agregarObservador(this);
+
+        this.partida.iniciarPartida();
     }
 
     private void configurarPartida(){
@@ -42,14 +90,11 @@ public class ControladorConsola implements Observador {
         } while(cantJugadores < 2 || cantJugadores > 4);
 
 
-        ArrayList<Jugador> jugadores = new ArrayList<>();
-        for(int i = 0; i < cantJugadores; i++){
+        this.puntajesTotales.clear();
+        for(int i=0; i < cantJugadores; i++){
             String nombre = vista.pedirNombreJugador(i + 1);
-            jugadores.add(new Jugador(nombre));
+            this.puntajesTotales.put(nombre, 0);
         }
-
-        this.partida = new Partida(jugadores);
-        this.partida.agregarObservador(this);
     }
 
     private void iniciarBucleJuego(){
@@ -135,7 +180,7 @@ public class ControladorConsola implements Observador {
         vista.mostrarEstadoJuego(nombre, mano, mesa, pozoVacio);
     }
 
-    private void gestionarFinPartida(){
+    private Jugador gestionarFinRonda(){
         ArrayList<Jugador> jugadores = partida.getJugadores();
         Jugador ganador = null;
         int minPuntos = Integer.MAX_VALUE;
@@ -149,7 +194,7 @@ public class ControladorConsola implements Observador {
         }
 
         if(ganador != null){
-            mensajeFinal = "¡El ganador es " + ganador.getNombre() + " al quedarse sin fichas!";
+            mensajeFinal = "¡El ganador de la ronda es " + ganador.getNombre() + " al quedarse sin fichas!";
         } else{
             for(Jugador j: jugadores){
                 int puntos = j.sumarPuntosDeMano();
@@ -159,9 +204,11 @@ public class ControladorConsola implements Observador {
                 }
             }
 
-            mensajeFinal = "¡Juego bloqueado! El ganador es " + ganador.getNombre() + " con " + minPuntos + " puntos.";
+            mensajeFinal = "¡Juego bloqueado! El ganador de la ronda es " + ganador.getNombre() + " con " + minPuntos + " puntos.";
         }
 
-        vista.mostrarFinPartida(mensajeFinal);
+        vista.mostrarFinRonda(mensajeFinal);
+
+        return ganador;
     }
 }

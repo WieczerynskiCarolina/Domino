@@ -68,18 +68,15 @@ public class Mesa {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        // 1. Muestra los extremos abiertos
         sb.append("MESA (Extremos: ");
         sb.append("[").append(this.extremoIzquierdo).append("] ... ");
         sb.append("[").append(this.extremoDerecho).append("])\n");
 
-        // 2. Muestra la cadena de fichas jugadas (opcional pero útil)
         sb.append("     Fichas jugadas: ");
         if (estaVacia()) {
             sb.append("(Vacía)");
         } else {
             for (Ficha f : this.fichasEnMesa) {
-                // Imprime cada ficha en la lista
                 sb.append(f.toString()).append(" ");
             }
         }

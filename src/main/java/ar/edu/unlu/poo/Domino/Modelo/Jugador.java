@@ -61,7 +61,7 @@ public class Jugador {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.nombre).append(": ");
-        sb.append(this.mano.toString()); // ArrayList ya tiene un buen toString
+        sb.append(this.mano.toString());
         return sb.toString();
     }
 }

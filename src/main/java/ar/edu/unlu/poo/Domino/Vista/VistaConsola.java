@@ -1,5 +1,6 @@
 package ar.edu.unlu.poo.Domino.Vista;
 
+import java.util.Map;
 import java.util.Scanner;
 
 public class VistaConsola{
@@ -53,7 +54,7 @@ public class VistaConsola{
     }
 
     public void mostrarEstadoJuego(String nombreJugador, String mano, String mesa, boolean pozoVacio) {
-        System.out.println("==================================================");
+        System.out.println("\n\n\n==================================================");
         System.out.println("Turno de: " + nombreJugador);
         System.out.println("--------------------------------------------------");
 
@@ -67,11 +68,24 @@ public class VistaConsola{
         System.out.println("==================================================");
     }
 
-    public void mostrarFinPartida(String mensajeFinal) {
-        System.out.println("\n=====================================");
-        System.out.println("¡PARTIDA TERMINADA!");
+    public void mostrarFinRonda(String mensajeFinal) {
+        System.out.println("\n==================================================");
+        System.out.println("¡RONDA TERMINADA!");
         System.out.println(mensajeFinal);
-        System.out.println("=====================================");
+        System.out.println("==================================================");
+    }
+
+    public void mostrarPuntajesTotales(Map<String, Integer> puntajes, int numeroRonda, int puntajeLimite){
+        System.out.println("\n--- Resumen tras Ronda " + numeroRonda + " (Objetivo: " + puntajeLimite + ") ---");
+        for(Map.Entry<String, Integer> entry: puntajes.entrySet()){
+            System.out.println("  " + entry.getKey() + ": " + entry.getValue() + " puntos");
+        }
+        System.out.println("-------------------------------------");
+    }
+
+    public void mostrarGanadorJuego(String nombreGanador){
+        System.out.println("¡FELICIDADES " + nombreGanador.toUpperCase() + "!");
+        System.out.println("¡Has ganado el juego alcanzando el límite de puntos!");
     }
 
 
@@ -109,5 +123,33 @@ public class VistaConsola{
         } while(opcionLado != 1 && opcionLado != 2);
 
         return opcionLado;
+    }
+
+    public void esperarEnter() {
+        scanner.nextLine();
+    }
+
+    public int pedirPuntajeLimite() {
+        System.out.println("\nIngrese el puntaje límite para ganar el juego (Enter para 100): ");
+        String entrada = scanner.nextLine();
+
+        if(entrada.isEmpty()){
+            mostrarMensaje("Se usará el puntaje por defecto: 100.");
+            return 100;
+        }
+
+        try{
+            int puntaje = Integer.parseInt(entrada);
+            if(puntaje <= 0){
+                mostrarMensaje("Error: El puntaje debe ser positivo. Se usará 100.");
+                return 100;
+            }
+
+            mostrarMensaje("Se jugará hasta " + puntaje + " puntos.");
+            return puntaje;
+        } catch(NumberFormatException e){
+            mostrarMensaje("Error: Entrada no válida. Se usará 100.");
+            return 100;
+        }
     }
 }
