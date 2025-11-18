@@ -64,6 +64,7 @@ public class Mesa {
         return this.fichasEnMesa.isEmpty();
     }
 
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -73,11 +74,27 @@ public class Mesa {
         sb.append("[").append(this.extremoDerecho).append("])\n");
 
         sb.append("     Fichas jugadas: ");
+
         if (estaVacia()) {
             sb.append("(Vacía)");
+
+        } else if (this.fichasEnMesa.size() == 1) {
+
+            sb.append(this.fichasEnMesa.getFirst().toString());
+
         } else {
+
+            int valorAnterior = this.extremoIzquierdo;
+
             for (Ficha f : this.fichasEnMesa) {
-                sb.append(f.toString()).append(" ");
+                if (f.getValorA() == valorAnterior) {
+                    sb.append("[").append(f.getValorA()).append("|").append(f.getValorB()).append("] ");
+                    valorAnterior = f.getValorB();
+
+                } else if (f.getValorB() == valorAnterior) {
+                    sb.append("[").append(f.getValorB()).append("|").append(f.getValorA()).append("] ");
+                    valorAnterior = f.getValorA();
+                }
             }
         }
         return sb.toString();

@@ -1,5 +1,8 @@
 package ar.edu.unlu.poo.Domino.Vista;
 
+import ar.edu.unlu.poo.Domino.Modelo.Ficha;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -53,7 +56,7 @@ public class VistaConsola{
         System.out.println(mensaje);
     }
 
-    public void mostrarEstadoJuego(String nombreJugador, String mano, String mesa, boolean pozoVacio) {
+    public void mostrarEstadoJuego(String nombreJugador, ArrayList<Ficha> mano, String mesa, boolean pozoVacio) {
         System.out.println("\n\n\n==================================================");
         System.out.println("Turno de: " + nombreJugador);
         System.out.println("--------------------------------------------------");
@@ -64,7 +67,19 @@ public class VistaConsola{
         String estadoPozo = pozoVacio ? "VACÍO" : "Fichas disponibles";
         System.out.println("Pozo: " + estadoPozo);
 
-        System.out.println("Tu mano: " + mano);
+        StringBuilder sbMano = new StringBuilder();
+        sbMano.append("Tu mano: ");
+
+        if (mano.isEmpty()) {
+            sbMano.append("(Sin fichas)");
+        } else {
+            for (int i = 0; i < mano.size(); i++) {
+                sbMano.append(i + 1).append(". ");
+                sbMano.append(mano.get(i).toString());
+                sbMano.append("  ");
+            }
+        }
+        System.out.println(sbMano.toString().trim());
         System.out.println("==================================================");
     }
 
@@ -90,11 +105,11 @@ public class VistaConsola{
 
 
     public int pedirIndiceFicha() {
-        System.out.println("Elige el índice de la ficha (0, 1, 2,...): ");
+        System.out.println("Elige el número de la ficha: ");
         while(!scanner.hasNextInt()){
             mostrarMensaje("Error: Debe ingresar un número.");
             scanner.next();
-            System.out.println("Elige el índice de la ficha (0, 1, 2,...): ");
+            System.out.println("Elige el número de la ficha: ");
         }
 
         int idx = scanner.nextInt();

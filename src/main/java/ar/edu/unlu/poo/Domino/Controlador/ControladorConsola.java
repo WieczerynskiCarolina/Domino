@@ -66,7 +66,7 @@ public class ControladorConsola implements Observador {
 
     }
 
-    public void iniciarNuevaRonda(){
+    private void iniciarNuevaRonda(){
         ArrayList<Jugador> jugadoresDeLaRonda = new ArrayList<>();
 
         for(String nombreJugador: this.puntajesTotales.keySet()){
@@ -124,7 +124,8 @@ public class ControladorConsola implements Observador {
     }
 
     private boolean gestionarJugada() {
-        int idx = vista.pedirIndiceFicha();
+        int idxMenu = vista.pedirIndiceFicha();
+        int idxReal = idxMenu - 1;
         int l;
         Lado lado = Lado.DERECHA;
 
@@ -135,12 +136,12 @@ public class ControladorConsola implements Observador {
             }
         }
 
-        if(idx < 0 || idx >= partida.getJugadorActual().getMano().size()){
+        if(idxReal < 0 || idxReal >= partida.getJugadorActual().getMano().size()){
             vista.mostrarMensaje("Error: Índice de ficha no válido.");
             return false;
         }
 
-        Ficha ficha = partida.getJugadorActual().getMano().get(idx);
+        Ficha ficha = partida.getJugadorActual().getMano().get(idxReal);
 
         if(partida.jugarFicha(ficha, lado)){
             return true;
@@ -173,7 +174,8 @@ public class ControladorConsola implements Observador {
     @Override
     public void actualizar(){
         String nombre = partida.getJugadorActual().getNombre();
-        String mano = partida.getJugadorActual().getMano().toString();
+        ArrayList<Ficha> mano = partida.getJugadorActual().getMano();
+        //String mano2 = partida.getJugadorActual().getMano().toString();
         String mesa = partida.getMesa().toString();
         boolean pozoVacio = partida.getPozo().estaVacia();
 
@@ -204,7 +206,7 @@ public class ControladorConsola implements Observador {
                 }
             }
 
-            mensajeFinal = "¡Juego bloqueado! El ganador de la ronda es " + ganador.getNombre() + " con " + minPuntos + " puntos.";
+            mensajeFinal = "¡Juego bloqueado! El ganador de la ronda es " + ganador.getNombre() + " por tener el puntaje más bajo en mano (" + minPuntos + " puntos).";
         }
 
         vista.mostrarFinRonda(mensajeFinal);
