@@ -4,6 +4,6 @@
 
 ## Diagrama de Clases (UML)
 
-![Diagrama de Clases del Juego](img/DominoUML.drawio.png)
+![Diagrama de Clases del Juego](img/DominoUML.jpg)
 
 ---
